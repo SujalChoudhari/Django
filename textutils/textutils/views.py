@@ -5,7 +5,6 @@ from django.shortcuts import render
 def index(req):
 
     text = req.POST.get("text","default")
-    ogtext = text
     removepunc = req.POST.get("removepunc","off")
     fullcaps = req.POST.get("fullcaps","off")
     newlineremover = req.POST.get("newlineremover","off")
@@ -33,9 +32,12 @@ def index(req):
         modifiers += "Removed New Lines\n"
 
     if extraspaceremover == "on":
-        text = text.replace("  "," ")
+        # remove trailing spaces
+        text = text.strip()
+        # remove exccess spaces
+        text = " ".join(text.split())
         modifiers += "Removed Extra Spaces\n"
      
-    params = {"original":ogtext,"final":text,"modifiers":modifiers}
+    params = {"final":text,"modifiers":modifiers}
 
     return render(req,"index.html",params)
