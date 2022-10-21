@@ -4,12 +4,12 @@ from django.shortcuts import render
 
 def index(req):
 
-    text = req.GET.get("text","default")
+    text = req.POST.get("text","default")
     ogtext = text
-    removepunc = req.GET.get("removepunc","off")
-    fullcaps = req.GET.get("fullcaps","off")
-    newlineremover = req.GET.get("newlineremover","off")
-    extraspaceremover = req.GET.get("extraspaceremover","off")
+    removepunc = req.POST.get("removepunc","off")
+    fullcaps = req.POST.get("fullcaps","off")
+    newlineremover = req.POST.get("newlineremover","off")
+    extraspaceremover = req.POST.get("extraspaceremover","off")
 
     if text == "default":
         return render(req,"index.html")
@@ -29,6 +29,7 @@ def index(req):
 
     if newlineremover == "on":
         text = text.replace("\n","")
+        text = text.replace("\r","")
         modifiers += "Removed New Lines\n"
 
     if extraspaceremover == "on":
