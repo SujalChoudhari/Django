@@ -8,7 +8,7 @@
 
 	<div class="container px-5 py-24 mx-auto">
 		<div class="flex flex-wrap -m-4">
-			
+
 			<!-- Card -->
 
 			{% for product in products %}
@@ -22,9 +22,15 @@
 					<h3 class="text-gray-500 text-xs tracking-widest title-font mb-1">{{ product.category }}</h3>
 					<h3 class="text-gray-500 text-xs tracking-widest title-font mb-1">{{ product.subcategory }}</h3>
 					<h2 class="text-white title-font text-lg font-medium">{{product.product_name}}</h2>
-					<h3 class="text-gray-500 text-xs tracking-widest title-font mb-1">{{ product.desc }}</h3>
-					<p class="mt-1">${{product.price}}</p>  
+					<h3 class="text-gray-500 text-xs tracking-widest title-font mb-1">{{ product.desc}}...</h3>
+					<p class="mt-1">${{product.price}}</p>
 				</div>
+				<button id="{{product.id}}" name="add-cart"
+					class="text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded text-lg">Add
+					To Cart</button>
+				<a href="/product/{{product.id}}">
+					<button id="view{{product.id}}"
+						class="text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded text-lg">View</button></a>
 			</div>
 
 			{% endfor %}
@@ -32,4 +38,40 @@
 	</div>
 </section>
 
+{% endblock %}
+{% block script%}
+<script>
+	let buttons = document.getElementsByName("add-cart")
+
+	if (document.body.id == "") {
+		document.getElementById('cart-count').innerHTML = "Log In";
+		document.getElementById('login-btn').style.cursor = "pointer";
+		document.getElementById('login-btn').onclick = function () {
+			window.location.href = "/login";
+		}
+
+		buttons.forEach(btn => {
+			btn.style.cursor = "not-allowed";
+		});
+	}
+	else {
+		buttons.forEach(btn => {
+			btn.onclick = () => {
+				let id = btn.id;
+				cart = localStorage.getItem("cart");
+				if (cart == null) {
+					let products = [];
+					products.push(id);
+					localStorage.setItem("cart", JSON.stringify(products));
+				} else {
+					let products = JSON.parse(cart);
+					products.push(id);
+					localStorage.setItem("cart", JSON.stringify(products));
+				}
+				num = JSON.parse(localStorage.getItem('cart')).length;
+				document.getElementById('cart-count').innerHTML = num;
+			}
+		});
+	}
+</script>
 {% endblock %}
