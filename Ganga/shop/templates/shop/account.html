@@ -1,7 +1,92 @@
 {% extends 'shop/basic.html' %}
-{% block title%} About Us {% endblock %}
+{% block title%} Account {% endblock %}
 {% block body%}
 
+<section class="text-gray-400 bg-gray-900 body-font">
+    <div id="container" class="container px-5 py-24 mx-auto">
+    </div>
+    <button onclick="clearCart()"
+            class="flex mx-auto mt-20 text-white bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg">Clear</button>
+</section>
+
+{% endblock %}
+
+{% block script %}
+<script>
+    function updateCart() {
+        cart = JSON.parse(localStorage.getItem('cart'));
+        holder = document.getElementById('container')
+        holder.innerHTML = '';
+        isLeft = true;
+
+        hashmap = {} // {id : count}
+
+        cart.forEach(item => {
+            if (hashmap[item] == undefined) {
+                hashmap[item] = 1;
+            } else {
+                hashmap[item] += 1;
+            }
+        });
+
+        var xmlHttp = new XMLHttpRequest();
+
+        for (item in hashmap) {
+            xmlHttp.open("GET", "/item/" + item, false);
+            xmlHttp.send(null);
+            data = JSON.parse(xmlHttp.responseText);
 
 
+
+
+            left = `
+    <div name="left" class="flex items-center lg:w-3/5 mx-auto border-b pb-10 mb-10 border-gray-800 sm:flex-row flex-col">
+        <div
+            class="sm:w-32 sm:h-32 h-20 w-20 sm:mr-10 inline-flex items-center justify-center rounded-full text-indigo-400 bg-gray-800 flex-shrink-0"><img class="rounded-full" src="${data.image}"/></div>
+        <div class="flex-grow sm:text-left text-center mt-6 sm:mt-0">
+            <h2 class="text-white text-lg title-font font-medium mb-2">${data.name}</h2>
+            <p class="leading-relaxed text-base">$${data.price}</p>
+            <p class="leading-relaxed text-base">${data.desc}</p>
+            <a class="mt-3 text-indigo-400 inline-flex items-center">Quantity: ${hashmap[item]}
+            </a>
+        </div>
+    </div>
+    `;
+
+
+            right = `
+    <div name="right" class="flex items-center lg:w-3/5 mx-auto border-b pb-10 mb-10 border-gray-800 sm:flex-row flex-col">
+        <div class="flex-grow sm:text-left text-center mt-6 sm:mt-0">
+            <h2 class="text-white text-lg title-font font-medium mb-2">${data.name}</h2>
+            <p class="leading-relaxed text-base">$${data.price}</p>
+            <p class="leading-relaxed text-base">${data.desc}</p>
+            <a class="mt-3 text-indigo-400 inline-flex items-center">Quantity: ${hashmap[item]}
+            </a>
+        </div>
+        <div
+        class="sm:w-32 order-first sm:order-none sm:h-32 h-20 w-20 sm:ml-10 inline-flex items-center justify-center rounded-full text-indigo-400 bg-gray-800 flex-shrink-0"><img class="rounded-full" src="${data.image}"/></div>
+    </div>
+    
+    `;
+
+            if (isLeft) {
+                holder.innerHTML += left;
+            }
+            else {
+                holder.innerHTML += right;
+            }
+            isLeft = !isLeft;
+        }
+
+    }
+
+    function clearCart(){
+        localStorage.setItem('cart', JSON.stringify([]));
+        document.getElementById('cart-count').innerHTML = " (0)";
+        updateCart();
+    }
+
+    updateCart()
+
+</script>
 {% endblock %}

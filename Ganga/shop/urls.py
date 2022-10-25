@@ -25,4 +25,8 @@ urlpatterns = [
     path("product/<int:id>",views.product,name="ProductView"),
     path("signup",views.signup,name="SignUp"),
     path("login",views.login,name="Login"),
+    path("account",views.account,name="Account"),
+
+    path("cart",views.cart,name="Cart"),
+    path("item/<int:id>",views.item,name="Item"),
 ]

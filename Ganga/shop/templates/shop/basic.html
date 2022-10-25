@@ -20,8 +20,7 @@
                 <a href="/about" class="mr-5 hover:text-white">About</a>
                 <a href="/contact" class="mr-5 hover:text-white">Contact</a>
             </nav>
-
-            {% if user %}
+            <a id="navbar-account-link" href="/account">
             <button id="login-btn"
                 class="inline-flex items-center bg-gray-800 border-0 py-1 px-3 focus:outline-none hover:bg-gray-700 rounded text-base mt-4 md:mt-0">{{user.name}}
                 <span id="cart-count">0</span>
@@ -30,17 +29,7 @@
                     <path d="M5 12h14M12 5l7 7-7 7"></path>
                 </svg>
             </button>
-            {% else %}
-            <a href="/login">
-                <button
-                    class="inline-flex items-center bg-gray-800 border-0 py-1 px-3 focus:outline-none hover:bg-gray-700 rounded text-base mt-4 md:mt-0">Login
-                    <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                        stroke-width="2" class="w-4 h-4 ml-1" viewBox="0 0 24 24">
-                        <path d="M5 12h14M12 5l7 7-7 7"></path>
-                    </svg>
-                </button>
-            </a>
-            {% endif %}
+        </a>
         </div>
     </header>
 
@@ -173,26 +162,136 @@
             </div>
         </div>
     </footer>
-    {% block script %}
-
-    {% endblock %}
+    
     <script>
-        if (document.body.id == "") { 
+
+        // If user is logged in, dispaly the cart button.
+        if (document.body.id == "") {
             document.getElementById('cart-count').innerHTML = "Log In";
+            document.getElementById('navbar-account-link').href = "/login";
             document.getElementById('login-btn').style.cursor = "pointer";
             document.getElementById('login-btn').onclick = function () {
                 window.location.href = "/login";
             }
         }
-        else{
+        else {
+
+            // Save a copy to local Storage
             let cart = localStorage.getItem('cart');
             if (cart == null) {
                 localStorage.setItem('cart', JSON.stringify([]));
             }
             num = JSON.parse(localStorage.getItem('cart')).length;
-            document.getElementById('cart-count').innerHTML = "(" + num + ")"; 
+            document.getElementById('cart-count').innerHTML = " (" + num + ")";
+
         }
+
+
+
+        function updateItemsCustomGroup() {
+            let cart = JSON.parse(localStorage.getItem('cart'));
+            let itemsCustomGroup = document.getElementsByName('items-custom-group')
+
+            itemsCustomGroup.forEach(group => {
+                id = group.id.slice(3);
+
+                if (cart.includes(id)) {
+                    count = cart.filter(x => x == id).length;
+                    let mnp = `<div class="inline-flex"> <button name="m" id="m${id}" class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-l">-</button> <button name="n" id="n${id}" class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 ">${count}</button> <button name="p" id="p${id}" class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-r">+</button></div>`
+                    group.innerHTML = mnp;
+                }
+
+
+
+
+            });
+
+
+            mBtns = document.getElementsByName('m');
+            nBtns = document.getElementsByName('n');
+            pBtns = document.getElementsByName('p');
+
+            mBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    id = btn.id.slice(1);
+                    let cart = JSON.parse(localStorage.getItem('cart'));
+                    let index = cart.indexOf(id);
+                    if (index > -1) {
+                        cart.splice(index, 1);
+                    }
+                    localStorage.setItem('cart', JSON.stringify(cart));
+                    num = cart.filter(x => x == id).length;
+                    document.getElementById('n' + id).innerHTML = num;
+                    document.getElementById('cart-count').innerHTML = " (" + cart.length + ")";
+                })
+            });
+
+            pBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    id = btn.id.slice(1);
+                    let cart = JSON.parse(localStorage.getItem('cart'));
+                    cart.push(id);
+                    localStorage.setItem('cart', JSON.stringify(cart));
+                    num = cart.filter(x => x == id).length;
+                    document.getElementById('n' + id).innerHTML = num;
+                    document.getElementById('cart-count').innerHTML = " (" + cart.length + ")";
+                })
+            });
+        }
+        function registerButtons() {
+            let buttons = document.getElementsByName("add-cart")
+
+            if (document.body.id == "") {
+                document.getElementById('cart-count').innerHTML = "Log In";
+                document.getElementById('login-btn').style.cursor = "pointer";
+                document.getElementById('login-btn').onclick = function () {
+                    window.location.href = "/login";
+                }
+
+                buttons.forEach(btn => {
+                    btn.style.cursor = "not-allowed";
+                });
+            }
+            else {
+                buttons.forEach(btn => {
+                    btn.onclick = () => {
+                        let id = btn.id;
+                        cart = localStorage.getItem("cart");
+                        if (cart == null) {
+                            let products = [];
+                            products.push(id);
+                            localStorage.setItem("cart", JSON.stringify(products));
+                        } else {
+                            let products = JSON.parse(cart);
+                            products.push(id);
+                            localStorage.setItem("cart", JSON.stringify(products));
+                        }
+                        num = JSON.parse(localStorage.getItem('cart')).length;
+                        document.getElementById('cart-count').innerHTML = " (" + num + ")";
+                        updateItemsCustomGroup();
+                    }
+                });
+            }
+        }
+        updateItemsCustomGroup();
     </script>
+    {% block script %}{% endblock %}
 </body>
 
 </html>
+
+<!-- 
+
+ let mnp = `<div class="inline-flex">
+                <button id="m{{product.id}}" 
+                    class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-l">-</button>
+                <button id="n{{product.id}}" 
+                    class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 ">${count}</button>
+                <button id="p{{product.id}}" 
+                    class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-r">+</button>
+                </div>`
+
+
+
+
+ -->

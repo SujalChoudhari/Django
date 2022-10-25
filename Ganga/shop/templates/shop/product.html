@@ -6,21 +6,33 @@
     <div class="container px-5 py-24 mx-auto">
         <div class="lg:w-4/5 mx-auto flex flex-wrap">
             <img alt="ecommerce" class="lg:w-1/2 w-full lg:h-auto h-64 object-cover object-center rounded"
-            src="/{{ product.image }}">
+                src="/{{ product.image }}">
             <div class="lg:w-1/2 w-full lg:pl-10 lg:py-6 mt-6 lg:mt-0">
                 <h2 class="text-sm title-font text-gray-500 tracking-widest">{{product.publish_date}}</h2>
                 <h1 class="text-white text-3xl title-font font-medium mb-1">{{product.product_name}}</h1>
-                <h2 class="text-sm title-font text-gray-500 tracking-widest">{{product.category}} | {{product.subcategory}}</h2>
-                
+                <h2 class="text-sm title-font text-gray-500 tracking-widest">{{product.category}} |
+                    {{product.subcategory}}</h2>
+
                 <p class="leading-relaxed">{{product.desc}}</p>
+
                 <div class="flex">
                     <span class="title-font font-medium text-2xl text-white">${{product.price}} </span>
-                    <button
-                        class="flex ml-auto text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded">Add to Cart</button>
+                    <span id="icg{{product.id}}" class="flex ml-auto" name="items-custom-group">
+
+                        <button id="{{product.id}}" name="add-cart"
+                            class="flex ml-auto text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded">Add
+                            To Cart</button>
+                    </span>
                 </div>
             </div>
         </div>
     </div>
 </section>
+{% endblock %}
 
+
+{% block script %}
+<script>
+    registerButtons()
+</script>
 {% endblock %}
